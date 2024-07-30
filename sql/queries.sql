@@ -1,260 +1,201 @@
+-- # Exercícios de MySQL
 
--- Criação do banco de dados Store
 CREATE DATABASE Store;
+
 USE Store;
 
--- Exercício 1 - Criação da tabela CLIENTS
-CREATE TABLE CLIENTS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL
-);
+-- 1. Crie a tabela `CLIENTS` com as seguintes colunas:
+--    - `id`: inteiro, chave primária, auto incrementável
+--    - `name`: texto, não nulo
+--    - `email`: texto, não nulo
 
--- Exercício 2 - Criação da tabela PRODUCTS
-CREATE TABLE PRODUCTS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL
-);
+    CREATE TABLE CLIENTS (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL
+    );
 
--- Exercício 3 - Criação da tabela ORDERS
-CREATE TABLE ORDERS (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    client_id INT,
-    order_date DATE NOT NULL,
-    total DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES CLIENTS(id)
-);
+-- 2. Crie a tabela `PRODUCTS` com as seguintes colunas:
+--    - `id`: inteiro, chave primária, auto incrementável
+--    - `name`: texto, não nulo
+--    - `price`: decimal, não nulo
 
--- Exercício 4 - Criação da tabela ORDER_ITEMS
-CREATE TABLE ORDER_ITEMS (
-    order_id INT,
-    product_id INT,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    PRIMARY KEY (order_id, product_id),
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id),
-    FOREIGN KEY (product_id) REFERENCES PRODUCTS(id)
-);
+    CREATE TABLE PRODUCTS (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        price DECIMAL(10, 2) NOT NULL
+    );
 
--- Exercício 5 - Inserção de dados nas tabelas CLIENTS e PRODUCTS
--- Inserção de dados na tabela CLIENTS
-INSERT INTO CLIENTS (name, email) VALUES
-('Cliente 1', 'cliente1@example.com'),
-('Cliente 2', 'cliente2@example.com');
+-- 3. Crie a tabela `ORDERS` com as seguintes colunas:
+--    - `id`: inteiro, chave primária, auto incrementável
+--    - `client_id`: inteiro, chave estrangeira referenciando `CLIENTS(id)`
+--    - `order_date`: data, não nulo
+--    - `total`: decimal, não nulo
 
--- Inserção de dados na tabela PRODUCTS
-INSERT INTO PRODUCTS (name, price) VALUES
-('Produto 1', 10.00),
-('Produto 2', 20.00),
-('Produto 3', 30.00);
+    CREATE TABLE ORDERS (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        client_id INT,
+        order_date DATE NOT NULL,
+        total DECIMAL(10, 2) NOT NULL,
+        FOREIGN KEY (client_id) REFERENCES CLIENTS(id)
+    );
 
--- Exercício 6 - Inserção de dados na tabela ORDERS
--- Inserção de dados na tabela ORDERS
-INSERT INTO ORDERS (client_id, order_date, total) VALUES
-(1, '2024-01-01', 60.00),
-(2, '2024-01-02', 30.00);
+--4. Crie a tabela `ORDER_ITEMS` com as seguintes colunas:
+--    - `order_id`: inteiro, chave estrangeira referenciando `ORDERS(id)`
+--    - `product_id`: inteiro, chave estrangeira referenciando `PRODUCTS(id)`
+--    - `quantity`: inteiro, não nulo
+--    - `price`: decimal, não nulo
 
--- Exercício 7 - Inserção de dados na tabela ORDER_ITEMS
--- Inserção de dados na tabela ORDER_ITEMS
-INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price) VALUES
-(1, 1, 2, 10.00),  -- 2x Produto 1
-(1, 3, 1, 30.00),  -- 1x Produto 3
-(2, 2, 1, 20.00);  -- 1x Produto 2
+    CREATE TABLE ORDER_ITEMS (
+        order_id INT,
+        product_id INT,
+        quantity INT NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        PRIMARY KEY (order_id, product_id),
+        FOREIGN KEY (order_id) REFERENCES ORDERS(id),
+        FOREIGN KEY (product_id) REFERENCES PRODUCTS(id)
+    );
 
--- Exercício 8 - Atualização do preço de um produto e dos registros relacionados
--- Atualizando o preço do Produto 1
-UPDATE PRODUCTS SET price = 15.00 WHERE id = 1;
+-- 5. Insira dados nas tabelas `CLIENTS` e `PRODUCTS`.
 
--- Atualizando os registros relacionados na tabela ORDER_ITEMS
-UPDATE ORDER_ITEMS SET price = 15.00 WHERE product_id = 1;
+    INSERT INTO CLIENTS (name, email) VALUES ('Alice', 'alice@example.com'), ('Bob', 'bob@example.com');
 
--- Exercício 9 - Deleção de um cliente e todos os pedidos relacionados
--- Deletando os pedidos relacionados ao Cliente 1
-DELETE FROM ORDER_ITEMS WHERE order_id IN (SELECT id FROM ORDERS WHERE client_id = 1);
-DELETE FROM ORDERS WHERE client_id = 1;
+    INSERT INTO PRODUCTS (name, price) VALUES ('Product A', 10.00), ('Product B', 20.00);
 
--- Deletando o Cliente 1
-DELETE FROM CLIENTS WHERE id = 1;
 
--- Exercício 10 - Alteração da tabela CLIENTS para adicionar coluna birthdate
-ALTER TABLE CLIENTS ADD birthdate DATE;
+-- 6. Insira dados na tabela `ORDERS`.
 
--- Exercício 11 - Consulta usando JOIN para listar pedidos com nomes dos clientes e produtos
-SELECT
-    ORDERS.id AS order_id,
-    CLIENTS.name AS client_name,
-    PRODUCTS.name AS product_name,
-    ORDER_ITEMS.quantity,
-    ORDER_ITEMS.price
-FROM
-    ORDERS
-JOIN
-    CLIENTS ON ORDERS.client_id = CLIENTS.id
-JOIN
-    ORDER_ITEMS ON ORDERS.id = ORDER_ITEMS.order_id
-JOIN
-    PRODUCTS ON ORDER_ITEMS.product_id = PRODUCTS.id;
+    INSERT INTO ORDERS (client_id, order_date, total) VALUES (1, '2024-07-01', 30.00), (2, '2024-07-02', 20.00);
 
--- Exercício 12 - Consulta usando LEFT JOIN para listar clientes e seus pedidos, incluindo clientes sem pedidos
-SELECT
-    CLIENTS.name AS client_name,
-    ORDERS.id AS order_id,
-    ORDERS.order_date,
-    ORDERS.total
-FROM
-    CLIENTS
-LEFT JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id;
+-- 7. Insira dados na tabela `ORDER_ITEMS`.
 
--- Exercício 13 - Consulta usando RIGHT JOIN para listar produtos e os pedidos que os contêm, incluindo produtos não pedidos
-SELECT
-    PRODUCTS.name AS product_name,
-    ORDER_ITEMS.order_id,
-    ORDER_ITEMS.quantity,
-    ORDER_ITEMS.price
-FROM
-    PRODUCTS
-RIGHT JOIN
-    ORDER_ITEMS ON PRODUCTS.id = ORDER_ITEMS.product_id;
+    INSERT INTO ORDER_ITEMS (order_id, product_id, quantity, price) VALUES (1, 1, 1, 10.00), (1, 2, 1, 20.00), (2, 2, 1, 20.00);
 
--- Exercício 14 - Funções de agregação para obter total de vendas e quantidade de itens vendidos
-SELECT
-    SUM(total) AS total_sales,
-    SUM(quantity) AS total_items_sold
-FROM
-    ORDER_ITEMS;
+-- 8. Atualize o preço de um produto na tabela `PRODUCTS` e todos os registros relacionados na tabela `ORDER_ITEMS`.
 
--- Exercício 15 - Listar todos os clientes e a quantidade total de pedidos realizados por cada um
-SELECT
-    CLIENTS.name AS client_name,
-    COUNT(ORDERS.id) AS total_orders
-FROM
-    CLIENTS
-LEFT JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-GROUP BY
-    CLIENTS.id
-ORDER BY
-    total_orders DESC;
+    UPDATE PRODUCTS SET price = 15.00 WHERE id = 1;
+    UPDATE ORDER_ITEMS SET price = 15.00 WHERE product_id = 1;
 
--- Exercício 16 - Listar todos os produtos e a quantidade total de cada produto vendido
-SELECT
-    PRODUCTS.name AS product_name,
-    SUM(ORDER_ITEMS.quantity) AS total_quantity_sold
-FROM
-    PRODUCTS
-LEFT JOIN
-    ORDER_ITEMS ON PRODUCTS.id = ORDER_ITEMS.product_id
-GROUP BY
-    PRODUCTS.id
-ORDER BY
-    total_quantity_sold DESC;
+-- 9. Delete um cliente e todos os pedidos relacionados.
 
--- Exercício 17 - Listar todos os clientes e o valor total gasto por cada um
-SELECT
-    CLIENTS.name AS client_name,
-    SUM(ORDERS.total) AS total_spent
-FROM
-    CLIENTS
-LEFT JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-GROUP BY
-    CLIENTS.id
-ORDER BY
-    total_spent DESC;
+    DELETE FROM ORDER_ITEMS WHERE order_id IN (SELECT id FROM ORDERS WHERE client_id = 1);
+    DELETE FROM ORDERS WHERE client_id = 1;
+    DELETE FROM CLIENTS WHERE id = 1;
 
--- Exercício 18 - Listar os 3 produtos mais vendidos e o total de vendas de cada um
-SELECT
-    PRODUCTS.name AS product_name,
-    SUM(ORDER_ITEMS.quantity) AS total_quantity_sold,
-    SUM(ORDER_ITEMS.price * ORDER_ITEMS.quantity) AS total_sales
-FROM
-    PRODUCTS
-JOIN
-    ORDER_ITEMS ON PRODUCTS.id = ORDER_ITEMS.product_id
-GROUP BY
-    PRODUCTS.id
-ORDER BY
-    total_quantity_sold DESC
-LIMIT 3;
+-- 10. Altere a tabela `CLIENTS` para adicionar uma coluna de data de nascimento (`birthdate`).
 
--- Exercício 19 - Listar os 3 clientes que mais gastaram e o total gasto por cada um
-SELECT
-    CLIENTS.name AS client_name,
-    SUM(ORDERS.total) AS total_spent
-FROM
-    CLIENTS
-JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-GROUP BY
-    CLIENTS.id
-ORDER BY
-    total_spent DESC
-LIMIT 3;
+    ALTER TABLE CLIENTS ADD birthdate DATE;
 
--- Exercício 20 - Listar a média de quantidade de produtos por pedido para cada cliente
-SELECT
-    CLIENTS.name AS client_name,
-    AVG(ORDER_ITEMS.quantity) AS average_quantity_per_order
-FROM
-    CLIENTS
-JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-JOIN
-    ORDER_ITEMS ON ORDERS.id = ORDER_ITEMS.order_id
-GROUP BY
-    CLIENTS.id;
+-- 11. Faça uma consulta usando JOIN para listar todos os pedidos com os nomes dos clientes e os nomes dos produtos.
 
--- Exercício 21 - Listar o total de pedidos e o total de clientes por mês
-SELECT
-    DATE_FORMAT(order_date, '%Y-%m') AS month,
-    COUNT(DISTINCT ORDERS.id) AS total_orders,
-    COUNT(DISTINCT ORDERS.client_id) AS total_clients
-FROM
-    ORDERS
-GROUP BY
-    month;
+    SELECT o.id AS order_id, c.name AS client_name, p.name AS product_name, oi.quantity, oi.price
+    FROM ORDERS o
+    INNER JOIN CLIENTS c ON o.client_id = c.id
+    INNER JOIN ORDER_ITEMS oi ON o.id = oi.order_id
+    INNER JOIN PRODUCTS p ON oi.product_id = p.id;
 
--- Exercício 22 - Listar os produtos que nunca foram vendidos
-SELECT
-    PRODUCTS.name AS product_name
-FROM
-    PRODUCTS
-LEFT JOIN
-    ORDER_ITEMS ON PRODUCTS.id = ORDER_ITEMS.product_id
-WHERE
-    ORDER_ITEMS.product_id IS NULL;
+-- 12. Faça uma consulta usando LEFT JOIN para listar todos os clientes e seus pedidos, incluindo clientes sem pedidos.
 
--- Exercício 23 - Listar os pedidos que contêm mais de 2 itens diferentes
-SELECT
-    ORDER_ITEMS.order_id
-FROM
-    ORDER_ITEMS
-GROUP BY
-    ORDER_ITEMS.order_id
-HAVING
-    COUNT(DISTINCT ORDER_ITEMS.product_id) > 2;
+    SELECT c.name AS client_name, o.id AS order_id, o.order_date, o.total
+    FROM CLIENTS c
+    LEFT JOIN ORDERS o ON c.id = o.client_id;
 
--- Exercício 24 - Listar os clientes que fizeram pedidos no último mês
-SELECT
-    DISTINCT CLIENTS.name AS client_name
-FROM
-    CLIENTS
-JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-WHERE
-    ORDERS.order_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+-- 13. Faça uma consulta usando RIGHT JOIN para listar todos os produtos e os pedidos que os contêm, incluindo produtos que não foram pedidos.
 
--- Exercício 25 - Listar os clientes com o maior valor médio por pedido
-SELECT
-    CLIENTS.name AS client_name,
-    AVG(ORDERS.total) AS average_order_value
-FROM
-    CLIENTS
-JOIN
-    ORDERS ON CLIENTS.id = ORDERS.client_id
-GROUP BY
-    CLIENTS.id
-ORDER BY
-    average_order_value DESC;
+    SELECT p.name AS product_name, oi.order_id, oi.quantity, oi.price
+    FROM PRODUCTS p
+    RIGHT JOIN ORDER_ITEMS oi ON p.id = oi.product_id;
+
+-- 14. Utilize funções de agregação para obter o total de vendas e a quantidade total de itens vendidos.
+
+    SELECT SUM(total) AS total_sales, SUM(quantity) AS total_items
+    FROM ORDERS o
+    INNER JOIN ORDER_ITEMS oi ON o.id = oi.order_id;
+
+-- 15. Faça uma consulta para listar todos os clientes e a quantidade total de pedidos realizados por cada um, ordenados pela quantidade de pedidos em ordem decrescente.
+
+    SELECT c.name, COUNT(o.id) AS total_orders
+    FROM CLIENTS c
+    LEFT JOIN ORDERS o ON c.id = o.client_id
+    GROUP BY c.name
+    ORDER BY total_orders DESC;
+
+-- 16. Faça uma consulta para listar todos os produtos e a quantidade total de cada produto vendido, ordenados pela quantidade em ordem decrescente.
+
+    SELECT p.name AS product_name, SUM(oi.quantity) AS total_quantity
+    FROM PRODUCTS p
+    LEFT JOIN ORDER_ITEMS oi ON p.id = oi.product_id
+    GROUP BY p.name
+    ORDER BY total_quantity DESC;
+
+-- 17. Faça uma consulta para listar todos os clientes e o valor total gasto por cada um, ordenados pelo valor gasto em ordem decrescente.
+
+    SELECT c.name AS client_name, SUM(o.total) AS total_spent
+    FROM CLIENTS c
+    INNER JOIN ORDERS o ON c.id = o.client_id
+    GROUP BY c.name
+    ORDER BY total_spent DESC;
+
+-- 18. Faça uma consulta para listar os 3 produtos mais vendidos (em quantidade) e o total de vendas de cada um.
+
+    SELECT p.name AS product_name, SUM(oi.quantity) AS total_quantity, SUM(oi.price * oi.quantity) AS total_sales
+    FROM PRODUCTS p
+    INNER JOIN ORDER_ITEMS oi ON p.id = oi.product_id
+    GROUP BY p.name
+    ORDER BY total_quantity DESC
+    LIMIT 3;
+
+-- 19. Faça uma consulta para listar os 3 clientes que mais gastaram e o total gasto por cada um.
+
+    SELECT c.name AS client_name, SUM(o.total) AS total_spent
+    FROM CLIENTS c
+    INNER JOIN ORDERS o ON c.id = o.client_id
+    GROUP BY c.name
+    ORDER BY total_spent DESC
+    LIMIT 3;
+
+-- 20. Faça uma consulta para listar a média de quantidade de produtos por pedido para cada cliente.
+
+    SELECT c.name AS client_name, AVG(oi.quantity) AS avg_quantity_per_order
+    FROM CLIENTS c
+    INNER JOIN ORDERS o ON c.id = o.client_id
+    INNER JOIN ORDER_ITEMS oi ON o.id = oi.order_id
+    GROUP BY c.name;
+
+-- 21. Faça uma consulta para listar o total de pedidos e o total de clientes por mês.
+
+    SELECT DATE_FORMAT(order_date, '%Y-%m') AS month, COUNT(DISTINCT o.id) AS total_orders, COUNT(DISTINCT o.client_id) AS total_clients
+    FROM ORDERS o
+    GROUP BY month
+    ORDER BY month;
+
+-- 22. Faça uma consulta para listar os produtos que nunca foram vendidos.
+
+    SELECT p.name AS product_name
+    FROM PRODUCTS p
+    LEFT JOIN ORDER_ITEMS oi ON p.id = oi.product_id
+    WHERE oi.product_id IS NULL;
+
+-- 23. Faça uma consulta para listar os pedidos que contêm mais de 2 itens diferentes.
+
+    SELECT o.id AS order_id, COUNT(DISTINCT oi.product_id) AS product_count
+    FROM ORDERS o
+    INNER JOIN ORDER_ITEMS oi ON o.id = oi.order_id
+    GROUP BY o.id
+    HAVING product_count > 2;
+
+-- 24. Faça uma consulta para listar os clientes que fizeram pedidos no último mês.
+
+    SELECT DISTINCT c.name AS client_name
+    FROM CLIENTS c
+    INNER JOIN ORDERS o ON c.id = o.client_id
+    WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+
+-- 25. Faça uma consulta para listar os clientes com o maior valor médio por pedido.
+
+    SELECT c.name AS client_name, AVG(o.total) AS avg_order_value
+    FROM CLIENTS c
+    INNER JOIN ORDERS o ON c.id = o.client_id
+    GROUP BY c.name
+    ORDER BY avg_order_value DESC
+    LIMIT 5;
