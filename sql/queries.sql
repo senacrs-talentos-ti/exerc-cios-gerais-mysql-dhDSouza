@@ -40,7 +40,7 @@ USE Store;
         FOREIGN KEY (client_id) REFERENCES CLIENTS(id)
     );
 
---4. Crie a tabela `ORDER_ITEMS` com as seguintes colunas:
+-- 4. Crie a tabela `ORDER_ITEMS` com as seguintes colunas:
 --    - `order_id`: inteiro, chave estrangeira referenciando `ORDERS(id)`
 --    - `product_id`: inteiro, chave estrangeira referenciando `PRODUCTS(id)`
 --    - `quantity`: inteiro, não nulo
